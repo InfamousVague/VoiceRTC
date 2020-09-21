@@ -6,11 +6,16 @@ let url
 if (process.env.NODE_ENV === 'DEV') {
   url = 'http://localhost:8080/'
 } else {
-  url = `file://${process.cwd()}/dist/index.html`
+  url = `file://${app.getAppPath()}/dist/index.html`
 }
 
 app.on('ready', () => {
-  let window = new BrowserWindow({width: 800, height: 600})
-
+  let window = new BrowserWindow({
+    width: 350,
+    height: 560,
+    frame: false
+  })
+  window.setResizable(false)
   window.loadURL(url)
+  window.webContents.openDevTools({detatch: true})
 })
