@@ -1,10 +1,32 @@
 <template>
   <div id="navbar">
-    <h3><i class="fa fa-wifi inactive"></i> &nbsp; VoiceRTC</h3>
-    <i class="nav-button icon icon-minus"></i>
-    <i class="nav-button icon icon-cross"></i>
+    <h3>VoiceRTC <span class="small">by RetroPronghorn</span></h3>
+    <span class="nav-button">
+        <i class="icon icon-minus" id="minimize"></i>
+    </span>
+    <span class="nav-button">
+        <i class="nav-button icon icon-cross" id="maximize"></i>
+    </span>
   </div>
 </template>
+<script>
+import InputMeter from './InputMeter.vue'
+
+export default {
+  name: 'settings',
+  components: {
+      InputMeter
+  },
+  methods: {
+    async minimize() {
+        // not yet
+    }
+  },
+  async mounted() {
+
+  }
+}
+</script>
 <style>
     #navbar {
         z-index: 2;
@@ -23,6 +45,8 @@
         font-size: 12px;
         margin-right: 0.5rem;
         -webkit-app-region: no-drag;
+        cursor: pointer;
+        z-index: 10;
     }
     #navbar h3 {
         position: absolute;
@@ -35,5 +59,13 @@
     }
     .inactive {
         color: #fff;
+    }
+    .small {
+        font-size: 8px;
+        color: rgba(255,255,255,.7);
+    }
+    .nav-button:hover {
+        cursor: pointer;
+        color: yellowgreen;
     }
 </style>
