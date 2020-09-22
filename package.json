@@ -1,5 +1,7 @@
 {
   "name": "voicertc",
+  "authors": "RetroPronghorn <retropronghorn@gmail.com>",
+  "description": "WebRTC Voice Chat",
   "version": "0.1.0",
   "private": true,
   "main": "app.js",
@@ -52,9 +54,33 @@
     "last 2 versions",
     "not ie <= 8"
   ],
+  "build": {
+    "mac": {
+      "hardenedRuntime": true,
+      "entitlements": "certs/entitlements.mac.plist",
+      "extendInfo": {
+        "NSMicrophoneUsageDescription": "Please let us access your microphone"
+      }
+    }
+  },
   "config": {
     "forge": {
-      "packagerConfig": {},
+      
+      "make_targets": {
+        "win32": [
+          "squirrel"
+        ],
+        "darwin": [
+          "zip"
+        ],
+        "linux": [
+          "deb",
+          "rpm"
+        ]
+      },
+      "packagerConfig": {
+        "asar": true
+      },
       "makers": [
         {
           "name": "@electron-forge/maker-squirrel",
