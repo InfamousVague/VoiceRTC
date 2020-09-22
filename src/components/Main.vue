@@ -1,8 +1,6 @@
 <template>
   <div id="main">
-    <h3><i class="fa fa-wifi inactive"></i> &nbsp; VoiceRTC</h3>
-    <i class="nav-button icon icon-minus"></i>
-    <i class="nav-button icon icon-cross"></i>
+    
   </div>
 </template>
 <style>
@@ -17,6 +15,8 @@
     .nav-button {
         font-size: 12px;
         margin-right: 0.5rem;
+        cursor: pointer !important;
+        z-index: 10;
     }
     #navbar h3 {
         position: absolute;

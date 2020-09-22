@@ -3,20 +3,46 @@
     <Navbar />
     <div class="container main-container">
       <div class="columns">
-        <div class="column col-xs-12 main">
+        <div class="column col-xs-12 main" v-if="activeConnection">
           <div id="header">
             <Users />
-            <h3 id="mic" class="pulse-button">
-              <i class="fa fa-microphone fa-hover-hidden"></i>
-              <i class="fa fa-microphone-slash fa-hover-show" style="margin-left: -3px;"></i>
-            </h3>
-            <h6>Latency: 50ms</h6>
-            <h6>Uptime: 5hr 30m 2s</h6>
+            <span v-if="host" class="conntype label label-primary">Host</span>
+            <span v-else class="conntype label label-primary">Client</span>
+            <Mic :muted="muted" :togglemute="togglemute" :peer="peer" />
+            <div id="code">
+                <h5>Room Code</h5>
+                <h3>{{peer.id}}</h3>
+            </div>
           </div>
-          <canvas class="section__canvas" id="canvas" resize></canvas>
+          <canvas v-if="host" class="section__canvas" id="canvas" resize></canvas>
           <div id="body">
-            <Settings />
+            <Settings :disconnect="disconnect" />
           </div>
+          <div v-if="host">
+            <Peer :peer="peer" :isHost="host"/>
+          </div>
+        </div>
+        <div class="column col-xs-12 main padded" v-else>
+          <h5>Create Chat</h5>
+          <p>
+            <small>Your chat will be hosted off your connection so consider this when chosing your desired audio quality.</small>
+          </p>
+          <button 
+            class="btn btn-lg btn-success" 
+            id="dc"
+            v-on:click="createHost">Create Room</button>
+          <br>
+          <br>
+          <hr class="break">
+          <br>
+          <h5>Join Chat</h5>
+          <p>
+            <small>Enter a chat code provided from a friend to connect and chat.</small>
+          </p>
+          <div class="form-group">
+            <input class="form-input" type="text" id="input-example-1" placeholder="0x0000">
+          </div>
+          <button class="btn btn-lg btn-success" id="dc">Connect</button>
         </div>
       </div>
     </div>
@@ -27,8 +53,18 @@
 import Navbar from './components/Navbar.vue'
 import Selector from './components/Selector.vue'
 import Settings from './components/Settings.vue'
+import Peer from './components/Peer.vue'
 import Users from './components/Users.vue'
+import Mic from './components/Mic.vue'
+
+import randomString from 'random-string'
 import paper from 'paper'
+import PeerJS from 'peerjs'
+
+// Sounds
+const joinAudio = new Audio('sounds/user-join.ogg')
+const leaveAudio = new Audio('sounds/user-left.ogg')
+const connectedAudio = new Audio('sounds/connected.ogg')
 
 export default {
   name: 'app',
@@ -36,9 +72,22 @@ export default {
     Navbar,
     Selector,
     Settings,
-    Users
+    Users,
+    Mic,
+    Peer
+  },
+  data: () => {
+    return {
+      activeConnection: false,
+      host: false,
+      muted: false,
+      peer: false
+    }
   },
   methods: {
+    togglemute() {
+      this.muted = !this.muted
+    },
     blob() {
       /* ====================== *
       *  0. Initiate Canvas    *
@@ -90,10 +139,27 @@ export default {
         wave.remove();
         initiateWave();
       };
+    },
+    createHost() {
+      this.activeConnection = true
+      this.host = true
+      this.peer = new PeerJS(randomString({length: 7}))
+      this.peer.on('open', () => {
+          joinAudio.play()
+      })
+      setTimeout(() => {
+        this.blob()
+      }, 10)
+    },
+    disconnect() {
+      leaveAudio.play()
+      this.peer.disconnect()
+      this.peer = false
+      this.activeConnection = false
     }
   },
   mounted () {
-    this.blob()
+    
   }
 }
 </script>
@@ -122,12 +188,32 @@ export default {
   padding-top: 4.5rem;
   background: linear-gradient(90deg, #00d2ff 0%, #3a47d5 100%);
 }
-* > .fa-hover-show,
-*:hover > .fa-hover-hidden {
-  display: none;
+#code {
+  position: absolute;
+  top: 6.5rem;
+  left: calc(50% - 2.8rem);
 }
-*:hover > .fa-hover-show {
-  display: inline-block;
+#code h5 {
+  font-size: 12px;
+  line-height: 0;
+  color:#fff;
+}
+#code h3{
+  color: #fff;
+  font-weight: bold;
+  font-size: 26px;
+}
+hr {
+  border: none;
+  border-top: 1px solid #2f2f57;
+}
+.conntype {
+  position: absolute;
+  top: 1.6rem;
+  left: 0.5rem;
+}
+.padded {
+  padding: 2rem;
 }
 .red {
   color: #e85600;
@@ -146,11 +232,6 @@ export default {
 .settings { 
   background: #23252f;
 }
-#mic {
-  padding-top: 1rem;
-  font-size: 40px;
-  margin: 0;
-}
 #canvas{
   margin: 0;
   padding: 0;
@@ -165,7 +246,7 @@ export default {
   left: 0;
   right: 0;
   bottom: 0;
-  top: 45%
+  top: 40%
 }
 #invite {
   position: absolute;
@@ -186,17 +267,31 @@ export default {
   height: 20px;
   border: none;
   top: 3.5rem;
-  box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.5);
+  box-shadow: 0 0 0 0 #fff;
   border-radius: 50%;
   background-size:cover;
   background-repeat: no-repeat;
   cursor: pointer;
   -webkit-animation: pulse 2.25s infinite cubic-bezier(0.66, 0, 0, 1);
 }
+
+.pulse-button-red {
+  box-shadow: 0 0 0 0 #e67e22;
+}
 .pulse-button i {
   position: absolute;
   top: -0.4rem;
   left: -0.15rem;
+}
+.form-input {
+  background: #2f2f57;
+  border: 1px solid #000;
+  color: #fff;
+}
+.input-label {
+  font-size: 17px;
+  display: inline-block;
+  width: 100%;
 }
 
 @-webkit-keyframes pulse {to {box-shadow: 0 0 0 45px rgba(232, 76, 61, 0);}}

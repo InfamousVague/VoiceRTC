@@ -20,17 +20,22 @@
             </select>
         </div>
         <br>
-        <button class="btn btn-lg btn-success" id="dc">Connect</button>
-        <!--
-        <button class="btn btn-lg btn-error" id="dc" disabled>Disconnect</button>
-        -->
+                <!--
+        <button class="btn btn-lg btn-success" id="dc">Connect</button>        -->
+        <button 
+            class="btn btn-lg btn-error" 
+            id="dc"
+            v-on:click="disconnect">Disconnect</button>
     </div>
 </template>
 <script>
 import InputMeter from './InputMeter.vue'
+let audioContext = new AudioContext()
+let analyser = audioContext.createAnalyser()
 
 export default {
-  name: 'app',
+  name: 'settings',
+  props: ['disconnect'],
   components: {
       InputMeter
   },
@@ -65,13 +70,10 @@ export default {
         this.audioStream = stream
     },
     async checkInputLevels() {
-        let audioContext = new AudioContext()
-        let analyser = audioContext.createAnalyser()
         let microphone = audioContext.createMediaStreamSource(this.audioStream)
         this.javascriptNode = audioContext.createScriptProcessor(2048, 1, 1)
-
         analyser.smoothingTimeConstant = 0.3;
-        analyser.fftSize = 1024;
+        analyser.fftSize = 2048;
 
         microphone.connect(analyser);
         analyser.connect(this.javascriptNode);
