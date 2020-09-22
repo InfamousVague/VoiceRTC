@@ -9,13 +9,19 @@
                 id="input-example-1" 
                 placeholder="Name" 
                 v-model="selectedInputDevice"
-                v-on:change="checkInputLevels">
+                v-on:change="inputDeviceChanged">
                 <option v-for="device in audioInputDevices" v-bind:key="device.deviceId">{{device.label}}</option>
             </select>
         </div>
         <div class="form-group">
             <label class="form-label" for="input-example-1">Output Device</label>
-            <select class="form-input" type="text" id="input-example-1" placeholder="Name" v-model="selectedOutputDevice">
+            <select 
+                class="form-input" 
+                type="text" 
+                id="input-example-1" 
+                placeholder="Name"
+                v-model="selectedOutputDevice"
+                v-on:change="outputDeviceChanged">
                 <option v-for="device in audioOutputDevices" v-bind:key="device.deviceId">{{device.label}}</option>
             </select>
         </div>
@@ -44,8 +50,8 @@ export default {
       level: {
           average: 3
       },
-      selectedInputDevice: false,
-      selectedOutputDevice: false,
+      selectedInputDevice: localStorage.getItem('selectedInputDevice') || false,
+      selectedOutputDevice: localStorage.getItem('selectedOutputDevice') || false,
       audioInputDevices: [],
       audioOutputDevices: [],
       audioStream: { active: false },
@@ -68,6 +74,13 @@ export default {
         }
         const stream = await navigator.mediaDevices.getUserMedia(constraints)
         this.audioStream = stream
+    },
+    inputDeviceChanged() {
+        localStorage.selectedInputDevice = this.selectedInputDevice
+        this.checkInputLevels()
+    },
+    outputDeviceChanged() {
+        localStorage.selectedOutputDevice = this.selectedOutputDevice
     },
     async checkInputLevels() {
         let microphone = audioContext.createMediaStreamSource(this.audioStream)
@@ -96,8 +109,8 @@ export default {
   },
   async mounted() {
     await this.getAudioDevices()
-    this.selectedInputDevice = this.audioInputDevices[0].label
-    this.selectedOutputDevice = this.audioOutputDevices[0].label
+    this.selectedInputDevice = localStorage.getItem('selectedInputDevice') || this.audioInputDevices[0].label
+    this.selectedOutputDevice = localStorage.getItem('selectedOutputDevice') || this.audioOutputDevices[0].label
     await this.connectMicrophone()
     this.checkInputLevels()
   }

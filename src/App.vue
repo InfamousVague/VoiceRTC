@@ -40,7 +40,7 @@
             <small>Enter a chat code provided from a friend to connect and chat.</small>
           </p>
           <div class="form-group">
-            <input class="form-input" type="text" id="input-example-1" placeholder="0x0000">
+            <input class="form-input" type="text" id="input-example-1" placeholder="Room Code">
           </div>
           <button class="btn btn-lg btn-success" id="dc">Connect</button>
         </div>
@@ -191,7 +191,9 @@ export default {
 #code {
   position: absolute;
   top: 6.5rem;
-  left: calc(50% - 2.8rem);
+  left: 0;
+  right: 0;
+  text-align: center;
 }
 #code h5 {
   font-size: 12px;

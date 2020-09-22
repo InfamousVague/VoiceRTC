@@ -43,7 +43,7 @@ export default {
     }
     .nav-button {
         font-size: 12px;
-        margin-right: 0.5rem;
+        margin-right: 0.35rem;
         -webkit-app-region: no-drag;
         cursor: pointer;
         z-index: 10;
@@ -51,7 +51,7 @@ export default {
     #navbar h3 {
         position: absolute;
         font-weight: bold;
-        left: 0.7rem;
+        left: 0.5rem;
         top: 0.3rem;
         font-size: 12px;
         -webkit-user-select: none;
