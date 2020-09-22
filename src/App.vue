@@ -5,24 +5,7 @@
       <div class="columns">
         <div class="column col-xs-12 main">
           <div id="header">
-            <div class="popover popover-bottom">
-              <button class="popover-button">
-                5 <i class="fa fa-user-plus"></i>
-              </button>
-              <div class="popover-container">
-                <div class="card">
-                  <div class="card-body">
-                    <ul>
-                      <li><i class="fa fa-times red"></i> RetroPronghorn</li>
-                      <li><i class="fa fa-times red"></i> JeromeASF</li>
-                      <li><i class="fa fa-times red"></i> Sitemusic88</li>
-                      <li><i class="fa fa-times red"></i> Cappy B</li>
-                      <li><i class="fa fa-times red"></i> Dropsy</li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <Users />
             <h3 id="mic" class="pulse-button">
               <i class="fa fa-microphone fa-hover-hidden"></i>
               <i class="fa fa-microphone-slash fa-hover-show" style="margin-left: -3px;"></i>
@@ -32,7 +15,6 @@
           </div>
           <canvas class="section__canvas" id="canvas" resize></canvas>
           <div id="body">
-            <Selector />
             <Settings />
           </div>
         </div>
@@ -45,6 +27,7 @@
 import Navbar from './components/Navbar.vue'
 import Selector from './components/Selector.vue'
 import Settings from './components/Settings.vue'
+import Users from './components/Users.vue'
 import paper from 'paper'
 
 export default {
@@ -52,7 +35,8 @@ export default {
   components: {
     Navbar,
     Selector,
-    Settings
+    Settings,
+    Users
   },
   methods: {
     blob() {
@@ -131,7 +115,7 @@ export default {
   overflow: hidden;
 }
 #header {
-  height: 400px;
+  height: 200px;
   width: calc(100% + 16px);
   background: #19192d;
   margin: 0 -8px;
@@ -148,39 +132,6 @@ export default {
 .red {
   color: #e85600;
   cursor: pointer;
-}
-ul {
-  margin: 0;
-  padding: 0;
-  text-align: left;
-  cursor: default;
-}
-li {
-  font-size: 14px;
-  display: block;
-}
-.popover {
-  position: absolute;
-  right: 0.8rem;
-  top: 1.8rem;
-}
-.popover-container {
-  position: relative;
-  right: 0;
-  margin-left: 0rem;
-  width: 180px;
-}
-.popover-button {
-  color: #fff;
-  background: transparent;
-  border: none;
-  font-weight: bold;
-  font-size: 18px;
-  cursor: pointer;
-}
-.card {
-  background-color: #19192d;
-  width: 180px;
 }
 .main-container {
   height: 100%;
@@ -207,6 +158,7 @@ li {
   left: 0;
   right: 0;
   top: 30%;
+  width: 100%;
 }
 #body {
   position: absolute;
