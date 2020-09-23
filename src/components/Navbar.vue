@@ -1,6 +1,6 @@
 <template>
   <div id="navbar">
-    <h3>VoiceRTC <span class="small">by RetroPronghorn</span></h3>
+    <h3>VoiceRTC <span class="small"><span style="color:red;">BETA</span> by RetroPronghorn</span></h3>
     <span class="nav-button">
         <i class="icon icon-minus" id="minimize"></i>
     </span>
@@ -10,12 +10,9 @@
   </div>
 </template>
 <script>
-import InputMeter from './InputMeter.vue'
-
 export default {
   name: 'settings',
   components: {
-      InputMeter
   },
   methods: {
     async minimize() {

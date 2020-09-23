@@ -1,26 +1,24 @@
 <template>
     <div class="peer-connector">
-      <small class="muted">
+      <small class="muted" v-if="peer">
         <span v-if="peer.open">
-          <i class="fa fa-plug"></i> Connected 
+          <i class="fa fa-plug"></i> Connected
         </span>
         <span v-if="peer.disconnected">
-          <i class="fa fa-times"></i> Disconnected 
+          <i class="fa fa-times"></i> Disconnected
         </span>
         <span v-if="!peer.open && !peer.disconnected">
           <i class="fa fa-spin fa-spinner"></i> Connecting...
         </span>
-        &nbsp;
-        <i class="fa fa-bolt"></i> {{peer.options.host}}
-        &nbsp;
+        <i class="fa fa-bolt"></i> {{peer.options.host}} &nbsp;
         <span v-if="peer.options.secure">
-          <i class="fa fa-lock"></i> Secured
+          <i class="fa fa-lock"></i> Secured &nbsp;
         </span>
       </small>
     </div>
 </template>
 <script>
-import Peer from 'peerjs'
+// import Peer from 'peerjs'
 
 export default {
   name: 'peerhost',
