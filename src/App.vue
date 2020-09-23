@@ -11,10 +11,14 @@
             <Mic :muted="muted" :togglemute="togglemute" :peer="peer" />
             <div id="code">
                 <h5>Room Code</h5>
-                <h3>{{peer.id}}</h3>
+                <h3>{{roomCode}}</h3>
             </div>
+            <p id="stats">
+              <span>Uptime</span><br>
+              <b>{{uptime}}</b>
+            </p>  
           </div>
-          <canvas v-if="host" class="section__canvas" id="canvas" resize></canvas>
+          <canvas v-if="activeConnection" class="section__canvas" id="canvas" resize></canvas>
           <div id="body">
             <Settings :disconnect="disconnect" />
           </div>
@@ -40,9 +44,9 @@
             <small>Enter a chat code provided from a friend to connect and chat.</small>
           </p>
           <div class="form-group">
-            <input class="form-input" type="text" id="input-example-1" placeholder="Room Code">
+            <input class="form-input" type="text" id="input-example-1" v-model="roomCode" placeholder="Room Code">
           </div>
-          <button class="btn btn-lg btn-success" id="dc">Connect</button>
+          <button class="btn btn-lg btn-success" id="dc" v-on:click="joinHost">Connect</button>
         </div>
       </div>
     </div>
@@ -60,7 +64,7 @@ import Mic from './components/Mic.vue'
 import randomString from 'random-string'
 import paper from 'paper'
 import PeerJS from 'peerjs'
-
+import moment from 'moment'
 // Sounds
 const joinAudio = new Audio('sounds/user-join.ogg')
 const leaveAudio = new Audio('sounds/user-left.ogg')
@@ -79,9 +83,13 @@ export default {
   data: () => {
     return {
       activeConnection: false,
+      connectedAt: false,
+      uptime: 0,
       host: false,
       muted: false,
-      peer: false
+      updateInterval: false,
+      peer: false,
+      roomCode: ''
     }
   },
   methods: {
@@ -140,18 +148,33 @@ export default {
         initiateWave();
       };
     },
-    createHost() {
+    connect(host = false) {
       this.activeConnection = true
-      this.host = true
+      this.host = host
       this.peer = new PeerJS(randomString({length: 7}))
+      this.roomCode = this.peer.id
       this.peer.on('open', () => {
-          joinAudio.play()
+          connectedAudio.play()
+          this.connectedAt = Date.now()
+          this.updateUptime()
       })
       setTimeout(() => {
         this.blob()
       }, 10)
     },
+    createHost() {
+      this.connect(true)
+    },
+    joinHost() {
+      this.connect(false)
+    },
+    updateUptime() {
+      this.updateInterval = setInterval(() => {
+        this.uptime = moment.unix(((Date.now() - this.connectedAt) / 1000)).format('m;s:').replace(';','m ').replace(':', 's')
+      }, 1000)
+    },
     disconnect() {
+      clearInterval(this.updateInterval)
       leaveAudio.play()
       this.peer.disconnect()
       this.peer = false
@@ -205,14 +228,23 @@ export default {
   font-weight: bold;
   font-size: 26px;
 }
+#stats {
+  position: absolute;
+  top: 4.5rem;
+  left: 1.5rem;
+  font-size: 12px;
+  margin: 0;
+  padding: 0;
+  margin-top: -0.88rem;
+}
 hr {
   border: none;
   border-top: 1px solid #2f2f57;
 }
 .conntype {
   position: absolute;
-  top: 1.6rem;
-  left: 0.5rem;
+  top: 2rem;
+  left: 1.5rem;
 }
 .padded {
   padding: 2rem;
@@ -249,41 +281,6 @@ hr {
   right: 0;
   bottom: 0;
   top: 40%
-}
-#invite {
-  position: absolute;
-  right: 1rem;
-  top: 1.8rem;
-  color: #fff;
-  font-size: 20px;
-  -webkit-transition: color 200ms linear;
-}
-#invite:hover {
-  cursor: pointer;
-  color: #eee;
-}
-.pulse-button {
-  position: absolute;
-  left: calc(50% - 10px);
-  width: 20px;
-  height: 20px;
-  border: none;
-  top: 3.5rem;
-  box-shadow: 0 0 0 0 #fff;
-  border-radius: 50%;
-  background-size:cover;
-  background-repeat: no-repeat;
-  cursor: pointer;
-  -webkit-animation: pulse 2.25s infinite cubic-bezier(0.66, 0, 0, 1);
-}
-
-.pulse-button-red {
-  box-shadow: 0 0 0 0 #e67e22;
-}
-.pulse-button i {
-  position: absolute;
-  top: -0.4rem;
-  left: -0.15rem;
 }
 .form-input {
   background: #2f2f57;

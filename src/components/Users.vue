@@ -31,10 +31,22 @@ li {
   font-size: 14px;
   display: block;
 }
+#invite {
+  position: absolute;
+  right: 1rem;
+  top: 1.8rem;
+  color: #fff;
+  font-size: 20px;
+  -webkit-transition: color 200ms linear;
+}
+#invite:hover {
+  cursor: pointer;
+  color: #eee;
+}
 .users {
   position: absolute;
-  right: 0.5rem;
-  top: 1.6rem;
+  top: 2rem;
+  right: 1.5rem;
   color: #fff;
 }
 .users > .popover-container {
