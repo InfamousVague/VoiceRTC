@@ -19,7 +19,6 @@ app.on('ready', () => {
   })
   window.setResizable(false)
   window.loadURL(url)
-  window.webContents.openDevTools({detatch: true})
   // Shortcuts
   // Toggle mute
   globalShortcut.register('CommandOrControl+Shift+M', () => {
@@ -28,5 +27,9 @@ app.on('ready', () => {
   // Disconnect
   globalShortcut.register('CommandOrControl+Shift+D', () => {
     console.log('CommandOrControl+Shift+D is pressed')
+  })
+  // Dev Tools
+  globalShortcut.register('CommandOrControl+Shift+J', () => {
+    window.webContents.openDevTools({detatch: true})
   })
 })
