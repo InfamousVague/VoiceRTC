@@ -31,7 +31,10 @@
         <button 
             class="btn btn-lg btn-error" 
             id="dc"
-            v-on:click="disconnect">Disconnect</button>
+            v-on:click="disconnect">
+            <small><i class="fas fa-phone-slash"></i></small>
+            Disconnect
+        </button>
     </div>
 </template>
 <script>
@@ -131,5 +134,8 @@ export default {
     }
     #dc {
         width: 100%;
+    }
+    .fa-phone-slash {
+        padding-right: 0.3rem;
     }
 </style>

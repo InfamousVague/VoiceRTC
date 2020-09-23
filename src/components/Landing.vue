@@ -25,7 +25,7 @@
           v-on:input="$emit('update:roomCode', $event.target.value)"
           placeholder="Enter Room Code">
       </div>
-      <button v-if="roomCode.length === 7" class="btn btn-lg btn-success" id="dc" v-on:click="joinHost" disabled>Connect</button>
+      <button v-if="roomCode.length === 7" class="btn btn-lg btn-success" id="dc" v-on:click="joinHost">Connect</button>
       <button v-else disabled class="btn btn-lg btn-success" id="dc" v-on:click="joinHost">Connect</button>
     </div> 
 </template>

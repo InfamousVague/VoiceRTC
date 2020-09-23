@@ -10,9 +10,9 @@
         <span v-if="!peer.open && !peer.disconnected">
           <i class="fa fa-spin fa-spinner"></i> Connecting...
         </span>
-        <i class="fa fa-bolt"></i> {{peer.options.host}} &nbsp;
+        <i class="fa fa-bolt"></i> {{peer.options.host}}
         <span v-if="peer.options.secure">
-          <i class="fa fa-lock"></i> Secured &nbsp;
+          <i class="fa fa-lock"></i> Secured
         </span>
       </small>
     </div>
