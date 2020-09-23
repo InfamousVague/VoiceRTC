@@ -4,50 +4,33 @@
     <div class="container main-container">
       <div class="columns">
         <div class="column col-xs-12 main" v-if="activeConnection">
+          <Voice :clientIds="clientIds" :muted="muted"/>
           <div id="header">
-            <Users />
+            <Users :peerCount="peerCount"/>
             <span v-if="host" class="conntype label label-primary">Host</span>
             <span v-else class="conntype label label-primary">Client</span>
-            <Mic :muted="muted" :togglemute="togglemute" :peer="peer" />
+            <Mic :muted="muted" :togglemute="togglemute" :peer="peer" :connected="connected" />
             <div id="code">
                 <h5>Room Code</h5>
                 <h3>{{roomCode}}</h3>
             </div>
-            <p id="stats">
-              <span>Uptime</span><br>
-              <b>{{uptime}}</b>
-            </p>  
+            <Stats :uptime="uptime" :latency="latency"/>
           </div>
           <canvas v-if="activeConnection" class="section__canvas" id="canvas" resize></canvas>
           <div id="body">
-            <Settings :disconnect="disconnect" />
+            <Settings :disconnect="disconnect" :host="host" />
           </div>
-          <div v-if="host">
-            <Peer :peer="peer" :isHost="host"/>
+          <div>
+            <Peer :peer="peer" :host="host" />
           </div>
         </div>
-        <div class="column col-xs-12 main padded" v-else>
-          <h5>Create Chat</h5>
-          <p>
-            <small>Your chat will be hosted off your connection so consider this when chosing your desired audio quality.</small>
-          </p>
-          <button 
-            class="btn btn-lg btn-success" 
-            id="dc"
-            v-on:click="createHost">Create Room</button>
-          <br>
-          <br>
-          <hr class="break">
-          <br>
-          <h5>Join Chat</h5>
-          <p>
-            <small>Enter a chat code provided from a friend to connect and chat.</small>
-          </p>
-          <div class="form-group">
-            <input class="form-input" type="text" id="input-example-1" v-model="roomCode" placeholder="Room Code">
-          </div>
-          <button class="btn btn-lg btn-success" id="dc" v-on:click="joinHost">Connect</button>
-        </div>
+        <Landing 
+          v-else
+          v-model="roomCode" 
+          :joinHost="joinHost" 
+          :createHost="createHost"
+          :roomCode="roomCode"
+          v-on:update:roomCode="roomCode = $event"/>
       </div>
     </div>
   </div>
@@ -55,11 +38,13 @@
 
 <script>
 import Navbar from './components/Navbar.vue'
-import Selector from './components/Selector.vue'
 import Settings from './components/Settings.vue'
 import Peer from './components/Peer.vue'
 import Users from './components/Users.vue'
 import Mic from './components/Mic.vue'
+import Stats from './components/Stats.vue'
+import Landing from './components/Landing.vue'
+import Voice from './components/Voice.vue'
 
 import randomString from 'random-string'
 import paper from 'paper'
@@ -69,32 +54,52 @@ import moment from 'moment'
 const joinAudio = new Audio('sounds/user-join.ogg')
 const leaveAudio = new Audio('sounds/user-left.ogg')
 const connectedAudio = new Audio('sounds/connected.ogg')
+const muteAudio = new Audio('sounds/mute.ogg')
+const unmuteAudio = new Audio('sounds/unmute.ogg')
+
 
 export default {
   name: 'app',
   components: {
     Navbar,
-    Selector,
     Settings,
     Users,
     Mic,
-    Peer
+    Stats,
+    Landing,
+    Peer,
+    Voice
   },
   data: () => {
     return {
+      connected: false,
       activeConnection: false,
       connectedAt: false,
       uptime: 0,
       host: false,
+      clients: [],
+      clientIds: [],
+      hostConn: false,
       muted: false,
+      peerCount: 1,
       updateInterval: false,
       peer: false,
-      roomCode: ''
+      roomCode: '',
+      latency: {
+        start: 0,
+        stop: 0,
+        time: 0
+      }
     }
   },
   methods: {
     togglemute() {
       this.muted = !this.muted
+      if (this.muted) {
+        muteAudio.play()
+      } else {
+        unmuteAudio.play()
+      }
     },
     blob() {
       /* ====================== *
@@ -115,7 +120,7 @@ export default {
           fillColor: '#19192d',
           strokeColor: '#19192d',
           strokeWidth: 5,
-          closed: true,
+          closed: true
         });
         for (var i = 0; i <= segmentAmount; i++) {
           // eslint-disable-next-line
@@ -148,38 +153,133 @@ export default {
         initiateWave();
       };
     },
-    connect(host = false) {
+    updateUptime() {
+      this.updateInterval = setInterval(() => {
+        this.uptime = moment.unix(((Date.now() - this.connectedAt) / 1000)).format('m;s:').replace(';','m ').replace(':', 's')
+        if (this.hostConn) this.ping()
+      }, 1000)
+    },
+    connect(host = false, cb = () => {}) {
       this.activeConnection = true
       this.host = host
       this.peer = new PeerJS(randomString({length: 7}))
-      this.roomCode = this.peer.id
+      if (host) this.roomCode = this.peer.id
       this.peer.on('open', () => {
           connectedAudio.play()
           this.connectedAt = Date.now()
           this.updateUptime()
+          this.peer.on('connection', (conn) => {
+            this.handleNewPeer(conn)
+            conn.on('data', (data) => {
+              this.parsePeerMessage(data, conn)
+            })
+          })
+          cb()
       })
       setTimeout(() => {
         this.blob()
       }, 10)
     },
     createHost() {
-      this.connect(true)
+      this.connect(true, () => {
+        this.connected = true
+      })
     },
     joinHost() {
-      this.connect(false)
+      this.connect(false, () => {
+        this.hostConn = this.peer.connect(this.roomCode)
+        // on open will be launch when you successfully connect to PeerServer
+        this.hostConn.on('open', () => {
+          // here you have conn.id
+          this.connected = true
+          this.hostConn.on('data', (data) => {
+            this.parseHostMessage(data)
+          })
+        })
+      })
     },
-    updateUptime() {
-      this.updateInterval = setInterval(() => {
-        this.uptime = moment.unix(((Date.now() - this.connectedAt) / 1000)).format('m;s:').replace(';','m ').replace(':', 's')
-      }, 1000)
+    handleNewPeer(conn) {
+      this.peerCount = this.peerCount + 1
+      this.clients.push(conn)
+      this.clientIds = this.clients.map(c => c.peer)
+      joinAudio.play()
+      conn.on('open', () => {
+        this.broadcastToPeers(
+          JSON.stringify({
+            type: 'clients_changed',
+            data: this.clients.map(c => c.peer)
+          })
+        )
+      })
+    },
+    handlePeerLeft(conn) {
+      this.peerCount = this.peerCount - 1
+      this.clients = this.clients.filter(c => c.peer !== conn.peer)
+      this.clientIds = this.clients.map(c => c.peer)
+      leaveAudio.play()
+      this.broadcastToPeers(
+        JSON.stringify({
+          type: 'clients_changed',
+          data: this.clients.map(c => c.peer)
+        })
+      )
+    },
+    broadcastToPeers(message) {
+      this.clients.forEach(c => {
+        c.send(message)
+      })
     },
     disconnect() {
       clearInterval(this.updateInterval)
       leaveAudio.play()
+      if (this.hostConn) this.hostConn.send(JSON.stringify({type: 'disconnect'}))
+      if (!this.hostConn) this.broadcastToPeers(JSON.stringify({type: 'disconnect'}))
       this.peer.disconnect()
       this.peer = false
       this.activeConnection = false
-    }
+      this.roomCode = ''
+      this.latency.time = 0
+    },
+    ping() {
+      this.latency.start = Date.now()
+      this.hostConn.send(JSON.stringify({type: 'ping'}))
+    },
+    parsePeerMessage(message, conn) {
+      const msg = JSON.parse(message)
+      switch(msg.type) {
+        case 'disconnect':
+          this.handlePeerLeft(conn)
+          break;
+        case 'ping':
+          conn.send(JSON.stringify({
+            type: 'pong'
+          }))
+          break;
+        default:
+          break;
+      }
+    },
+    parseHostMessage(message) {
+      const msg = JSON.parse(message)
+      switch(msg.type) {
+        case 'disconnect':
+          this.disconnect()
+          break;
+        case 'pong':
+          this.latency.stop = Date.now()
+          this.latency.time = this.latency.stop - this.latency.start
+          break;
+        case 'clients_changed':
+          if (msg.data.length + 1 > this.peerCount) 
+            joinAudio.play()
+          this.peerCount = msg.data.length + 1
+          this.clientIds = msg.data
+          this.ping()
+          break;
+        default:
+          break;
+      }
+    },
   },
   mounted () {
     
@@ -227,15 +327,6 @@ export default {
   color: #fff;
   font-weight: bold;
   font-size: 26px;
-}
-#stats {
-  position: absolute;
-  top: 4.5rem;
-  left: 1.5rem;
-  font-size: 12px;
-  margin: 0;
-  padding: 0;
-  margin-top: -0.88rem;
 }
 hr {
   border: none;

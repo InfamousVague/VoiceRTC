@@ -2,10 +2,10 @@
     <div v-if="peer && peer.open">
       <h3 id="mic" class="pulse-button" v-if="!muted" v-on:click="togglemute">
         <i class="fa fa-microphone fa-hover-hidden"></i>
-        <i class="fa fa-microphone-slash fa-hover-show red" style="margin-left: -3px;"></i>
+        <i class="fa fa-microphone-slash fa-hover-show" style="margin-left: -3px;"></i>
       </h3>
       <h3 id="mic" class="pulse-button pulse-button-red" v-else v-on:click="togglemute">
-        <i class="fa fa-microphone fa-hover-show" style="color: #fff;"></i>
+        <i class="fa fa-microphone fa-hover-show red"></i>
         <i class="fa fa-microphone-slash fa-hover-hidden red" style="margin-left: -3px;"></i>
       </h3>
     </div>
@@ -29,12 +29,12 @@ export default {
     height: 20px;
     border: none;
     top: 3.5rem;
-    box-shadow: 0 0 0 0 #fff;
+    box-shadow: 0 0 0 0 rgba(255,255,255,0.75);
     border-radius: 50%;
     background-size:cover;
     background-repeat: no-repeat;
     cursor: pointer;
-    -webkit-animation: pulse 2.25s infinite cubic-bezier(0.66, 0, 0, 1);
+    -webkit-animation: pulse 4.25s infinite cubic-bezier(0.06, 0, 0, 1);
   }
 
   .pulse-button-red {

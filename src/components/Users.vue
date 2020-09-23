@@ -2,7 +2,7 @@
     <div class="users">
         <div class="popover popover-bottom">
             <button class="popover-button">
-                5 &nbsp;<i class="fa fa-users"></i>
+                {{peerCount}} &nbsp;<i class="fa fa-users"></i>
             </button>
             <div class="popover-container">
                 <div class="card">
@@ -20,6 +20,13 @@
         </div>
     </div>
 </template>
+<script>
+
+export default {
+  name: 'users',
+  props: ['peerCount']
+}
+</script>
 <style>
 ul {
   margin: 0;
