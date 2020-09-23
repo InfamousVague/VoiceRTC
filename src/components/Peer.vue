@@ -27,10 +27,10 @@ export default {
   props: ['peer', 'isHost'],
   methods: {
     async connect() {
-      console.log(this.peer)
+      // console.log(this.peer)
     },
     async setupHost() {
-      console.log('im a host')
+      // console.log('im a host')
     }
   },
   async mounted() {

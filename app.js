@@ -3,11 +3,13 @@ const app = electron.app
 const BrowserWindow = electron.BrowserWindow
 const path = require('path')
 
+process.env['APP_PATH'] = app.getAppPath()
+
 let url
 if (process.env.NODE_ENV === 'DEV') {
   url = 'http://localhost:8080/'
 } else {
-  url = `file://${__dirname}/dist/index.html`
+  url = `file://${process.env['APP_PATH']}/dist/index.html`
 }
 
 app.on('ready', () => {

@@ -118,9 +118,9 @@ export default {
 </script>
 <style>
     #settings {
-        width: 75%;
+        width: 82.5%;
         margin-top: 0.7rem;
-        margin-left: calc(12.5%);
+        margin-left: calc(8.5%);
         text-align: left;
     }
     #settings .btn-group {

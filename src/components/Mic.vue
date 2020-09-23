@@ -22,6 +22,29 @@ export default {
 }
 </script>
 <style>
+  .pulse-button {
+    position: absolute;
+    left: calc(50% - 10px);
+    width: 20px;
+    height: 20px;
+    border: none;
+    top: 3.5rem;
+    box-shadow: 0 0 0 0 #fff;
+    border-radius: 50%;
+    background-size:cover;
+    background-repeat: no-repeat;
+    cursor: pointer;
+    -webkit-animation: pulse 2.25s infinite cubic-bezier(0.66, 0, 0, 1);
+  }
+
+  .pulse-button-red {
+    box-shadow: 0 0 0 0 #e67e22;
+  }
+  .pulse-button i {
+    position: absolute;
+    top: -0.4rem;
+    left: -0.15rem;
+  }
   #mic {
     padding-top: 1rem;
     font-size: 40px;
