@@ -1,0 +1,22 @@
+#settings {
+    width: 82.5%;
+    margin-top: 0.7rem;
+    margin-left: calc(8.5%);
+    text-align: left;
+}
+
+#settings .btn-group {
+    width: 100%;
+}
+
+#settings select {
+    width: 100%;
+}
+
+#dc {
+    width: 100%;
+}
+
+.fa-phone-slash {
+    padding-right: 0.3rem;
+}
