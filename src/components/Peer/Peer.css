@@ -1,0 +1,23 @@
+.peer-connector {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    left: 0;
+    background: transparent;
+    z-index: 100;
+    padding: 0.2rem;
+    text-align: center;
+}
+
+.muted {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.green {
+    color: greenyellow;
+}
+
+.peer-connector .spacer,
+.peer-connector .spacer {
+    margin-left: 0.5rem;
+}

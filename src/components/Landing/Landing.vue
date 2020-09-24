@@ -2,7 +2,7 @@
     <div class="column col-xs-12 main padded">
       <h5>Create Chat</h5>
       <p>
-        <small>Your chat will be hosted off your connection so consider this when chosing your desired audio quality.</small>
+        <small>Create a chat and invite people to chat. Connections are peer 2 peer, the person with the best connection should host.</small>
       </p> 
       <button 
         class="btn btn-lg btn-success" 
@@ -29,15 +29,4 @@
       <button v-else disabled class="btn btn-lg btn-success" id="dc" v-on:click="joinHost">Connect</button>
     </div> 
 </template>
-<script>
-
-export default {
-  name: 'stats',
-  props: ['createHost', 'roomCode', 'joinHost'],
-  methods: {
-    updateValue: function (value) {
-      this.$emit('roomCode', value);
-    }
-  }
-}
-</script>
+<script src="./Landing.js"></script>
