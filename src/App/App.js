@@ -46,6 +46,7 @@ export default {
     },
     data: () => {
         return {
+            audioComponents: [],
             // UI
             callEnded: false,
             disconnecting: false,
@@ -67,7 +68,12 @@ export default {
             peer: false,
             hostConn: false,
             updateInterval: false,
-            roomCode: ''
+            roomCode: '',
+            // Devices
+            selectedInputDevice: false,
+            selectedOutputDevice: false,
+            // Voice
+            voiceDCHandler: () => {},
         }
     },
     methods: {
@@ -85,6 +91,12 @@ export default {
         blob() {
             // Imported
             blob()
+        },
+        hoistSelectedInput(device) {
+            this.selectedInputDevice = device
+        },
+        hoistSelectedOutput(device) {
+            this.selectedOutputDevice = device
         },
         confirmCallEnded() {
             this.callEnded = false
@@ -219,6 +231,9 @@ export default {
         // ------------------
         // Misc
         // ------------------
+        setVoiceDCHandler(handler) {
+            this.voiceDCHandler = handler
+        },
         cleanup() {
             this.disconnecting = false
             this.peer.disconnect()
@@ -229,7 +244,15 @@ export default {
             this.peer = false
             clearInterval(this.updateInterval)
         },
+        domElementCleanup(els) {
+            Object.keys(els).forEach(key => {
+                if (els[key].pause()) els[key].pause()
+                els[key].remove()
+            })
+        },
         disconnect() {
+            this.voiceDCHandler()
+            this.audioComponents.forEach(audio => audio.pause())
             leaveAudio.play()
             if (this.hostConn) this.hostConn.send(JSON.stringify({ type: 'disconnect' }))
             if (!this.hostConn) this.broadcastToPeers(JSON.stringify({ type: 'disconnect' }))

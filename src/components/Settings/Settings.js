@@ -4,7 +4,10 @@ let analyser = audioContext.createAnalyser()
 
 export default {
     name: 'settings',
-    props: ['disconnect', 'muted', 'disconnecting'],
+    props: [
+        'disconnect', 'muted', 'disconnecting',
+        'hoistSelectedOutput', 'hoistSelectedInput'
+    ],
     components: {
         InputMeter
     },
@@ -33,9 +36,11 @@ export default {
         inputDeviceChanged() {
             localStorage.selectedInputDevice = this.selectedInputDevice
             this.checkInputLevels()
+            this.hoistSelectedInput(this.selectedInputDevice)
         },
         outputDeviceChanged() {
             localStorage.selectedOutputDevice = this.selectedOutputDevice
+            this.hoistSelectedOutput(this.selectedOutputDevice)
         },
         async checkInputLevels() {
             if (this.microphone) this.microphone.disconnect()
@@ -76,6 +81,8 @@ export default {
         await this.getAudioDevices()
         this.selectedInputDevice = localStorage.getItem('selectedInputDevice') || this.audioInputDevices[0].label
         this.selectedOutputDevice = localStorage.getItem('selectedOutputDevice') || this.audioOutputDevices[0].label
+        this.hoistSelectedInput(this.selectedInputDevice)
+        this.hoistSelectedOutput(this.selectedOutputDevice)
         if (this.audioInputDevices.filter(d => d.label === this.selectedInputDevice).length === 0) {
             this.selectedInputDevice = this.audioInputDevices[0].label
             this.inputDeviceChanged()
