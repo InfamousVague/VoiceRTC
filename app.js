@@ -15,7 +15,11 @@ app.on('ready', () => {
     let window = new BrowserWindow({
         width: 350,
         height: 560,
-        frame: false
+        frame: false,
+        webPreferences: {
+            enableRemoteModule: true,
+            nodeIntegration: true,
+        }
     })
     window.setResizable(false)
     window.loadURL(url)

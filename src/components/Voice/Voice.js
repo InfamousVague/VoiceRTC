@@ -55,7 +55,7 @@ export default {
                 video: false,
                 audio: {
                     //TODO: use selected device
-                    deviceId: this.audioInputDevices[0].deviceId
+                    deviceId: this.audioInputDevices[1].deviceId
                 }
             }
             this.audioStream = await navigator.mediaDevices.getUserMedia(constraints)
@@ -92,7 +92,6 @@ export default {
                 console.log('input changed', val)
                 this.selectedInputDevice = val
                     // Disconnect from calls and re call using new devices
-
             }
         },
         selectedOutputDevice: {
@@ -100,6 +99,11 @@ export default {
             immediate: true,
             handler: function(val) {
                 this.selectedOutputDevice = val
+                Object.keys(this.audioStreams).forEach(key => {
+                    const audioDeviceId = this.audioOutputDevices.filter(dev => dev.label === this.selectedOutputDevice)[0]
+                    console.log('audioDevice', audioDeviceId)
+                    this.audioStreams[key].setSinkId(audioDeviceId.deviceId)
+                })
                 console.log('output changed', val)
             }
         }

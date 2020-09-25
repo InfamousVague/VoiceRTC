@@ -2,7 +2,7 @@
     <div class="column col-xs-12 main padded">
       <h5>Create Chat</h5>
       <p>
-        <small>Create a chat and invite people to chat. Connections are peer 2 peer, the person with the best connection should host.</small>
+        <small>Privacy first, no servers here! Users connect directly to each other with no middleman.<br /><b>Enjoy your piece of mind and high quality recording ready audio.</b></small>
       </p> 
       <button 
         class="btn btn-lg btn-success" 
