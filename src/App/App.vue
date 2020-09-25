@@ -17,7 +17,15 @@
       </div>
       <div class="columns">
         <div class="column col-xs-12 main" v-if="activeConnection">
-          <Voice :peerIds="peerIds" :muted="muted"/>
+          <Voice 
+            v-if="activeConnection"
+            :peer="peer" 
+            :peerIds="peerIds" 
+            :muted="muted"
+            :selectedInputDevice="selectedInputDevice"
+            :selectedOutputDevice="selectedOutputDevice"
+            :registerDisconnect="setVoiceDCHandler"
+            :domElementCleanup="domElementCleanup" />
           <div id="header">
             <Users :peerIds="peerIds"/>
             <span v-if="host" class="conntype label label-primary">Host</span>
@@ -31,7 +39,13 @@
           </div>
           <canvas v-if="activeConnection" class="section__canvas" id="canvas" resize></canvas>
           <div id="body">
-            <Settings :disconnect="disconnect" :host="host" :muted="muted" :disconnecting="disconnecting" />
+            <Settings 
+              :disconnect="disconnect" 
+              :host="host" 
+              :muted="muted" 
+              :hoistSelectedInput="hoistSelectedInput"
+              :hoistSelectedOutput="hoistSelectedOutput"
+              :disconnecting="disconnecting" />
           </div>
           <div>
             <Peer :peer="peer" :host="host" />
