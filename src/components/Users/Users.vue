@@ -4,6 +4,7 @@
             <button class="popover-button" v-if="peerIds">
                 {{peerIds.length}} &nbsp;<i class="fa fa-users"></i>
             </button>
+            <!--
             <div class="popover-container">
                 <div class="card">
                     <div class="card-body">
@@ -17,6 +18,7 @@
                     </div>
                 </div>
             </div>
+            -->
         </div>
     </div>
 </template>

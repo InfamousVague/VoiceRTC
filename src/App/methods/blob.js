@@ -1,10 +1,9 @@
 import paper from 'paper'
 
 export function blob() {
-    console.log('test')
-        /* ====================== *
-         *  0. Initiate Canvas    *
-         * ====================== */
+    /* ====================== *
+     *  0. Initiate Canvas    *
+     * ====================== */
     paper.install(window)
     paper.setup(document.getElementById("canvas"))
 

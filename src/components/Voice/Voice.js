@@ -4,6 +4,7 @@ export default {
         'peer',
         'peerIds',
         'muted',
+        'bitrate',
         'registerDisconnect',
         'selectedInputDevice',
         'selectedOutputDevice',
@@ -27,22 +28,18 @@ export default {
             this.audioOutputDevices = audioOutputDevices
         },
         listenForCalls() {
-            // console.log('listen to peer', peer)
             this.peer.on('call', (call) => {
                 call.answer(this.audioStream)
                 call.on('stream', (remoteStream) => {
                     this.playRemoteStream(remoteStream)
                 })
+                call.on('disconnected', () => {
+                    console.log('disconnected from', call)
+                })
             })
         },
         async connectToNewPeer(peerId) {
             this.calls[peerId] = this.peer.call(peerId, this.audioStream)
-            this.calls[peerId].on('stream', (remoteStream) => {
-                console.log('call answered')
-                console.log('remoteStream', remoteStream)
-                    //this.playRemoteStream(remoteStream)
-            })
-            console.log('peerId', peerId)
         },
         playRemoteStream(e) {
             this.audioStreams[e.id] = new Audio();
@@ -51,14 +48,31 @@ export default {
             this.audioStreams[e.id].play()
         },
         async updateAudioStream() {
+            const device = this.audioInputDevices.filter(
+                d => d.label === this.selectedInputDevice
+            )[0]
             const constraints = {
                 video: false,
                 audio: {
-                    //TODO: use selected device
-                    deviceId: this.audioInputDevices[1].deviceId
+                    deviceId: device.deviceId,
+                    autoGainControl: false,
+                    channelCount: 2,
+                    echoCancellation: false,
+                    latency: 0,
+                    noiseSuppression: false,
+                    sampleRate: parseInt(this.bitrate.replace('kbps', '000')),
+                    sampleSize: 24,
+                    volume: 1.0
                 }
             }
             this.audioStream = await navigator.mediaDevices.getUserMedia(constraints)
+        },
+        async refresh() {
+            this.disconnect()
+            await this.updateAudioStream()
+            this.peerIds.forEach(peerId => {
+                this.connectToNewPeer(peerId)
+            })
         },
         disconnect() {
             Object.keys(this.calls).forEach(callId => {
@@ -86,12 +100,14 @@ export default {
             }
         },
         selectedInputDevice: {
-            // the callback will be called immediately after the start of the observation
             immediate: true,
-            handler: function(val) {
-                console.log('input changed', val)
-                this.selectedInputDevice = val
-                    // Disconnect from calls and re call using new devices
+            handler: function(val, prevVal) {
+                if (!prevVal) {
+                    this.selectedInputDevice = val
+                } else {
+                    this.refresh()
+                }
+                // Disconnect from calls and re call using new devices
             }
         },
         selectedOutputDevice: {
@@ -100,11 +116,11 @@ export default {
             handler: function(val) {
                 this.selectedOutputDevice = val
                 Object.keys(this.audioStreams).forEach(key => {
-                    const audioDeviceId = this.audioOutputDevices.filter(dev => dev.label === this.selectedOutputDevice)[0]
-                    console.log('audioDevice', audioDeviceId)
+                    const audioDeviceId = this.audioOutputDevices.filter(
+                        dev => dev.label === this.selectedOutputDevice
+                    )[0]
                     this.audioStreams[key].setSinkId(audioDeviceId.deviceId)
                 })
-                console.log('output changed', val)
             }
         }
     },
