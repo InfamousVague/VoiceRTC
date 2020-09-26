@@ -18,8 +18,9 @@
       <div class="columns">
         <div class="column col-xs-12 main" v-if="activeConnection">
           <Voice 
-            v-if="activeConnection"
+            v-if="activeConnection && selectedInputDevice && selectedOutputDevice"
             :peer="peer" 
+            :bitrate="bitrate"
             :peerIds="peerIds" 
             :muted="muted"
             :selectedInputDevice="selectedInputDevice"
@@ -31,6 +32,9 @@
             <span v-if="host" class="conntype label label-primary">Host</span>
             <span v-else class="conntype label label-primary">Client</span>
             <Mic :muted="muted" :togglemute="togglemute" :peer="peer" :connected="connected" />
+            <QualitySelector 
+              :bitrate="bitrate"
+              :qualityChanged="qualityChanged" />
             <div id="code">
                 <h5>Room Code</h5>
                 <h3>{{roomCode}}</h3>

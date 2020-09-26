@@ -6,6 +6,7 @@ import Stats from '../components/Stats/Stats.vue'
 import Settings from '../components/Settings/Settings.vue'
 import Voice from '../components/Voice/Voice.vue'
 import Peer from '../components/Peer/Peer.vue'
+import QualitySelector from '../components/QualitySelector/QualitySelector.vue'
 
 import randomString from 'random-string'
 import PeerJS from 'peerjs'
@@ -42,11 +43,13 @@ export default {
         Stats,
         Landing,
         Peer,
-        Voice
+        Voice,
+        QualitySelector
     },
     data: () => {
         return {
             audioComponents: [],
+            bitrate: localStorage.getItem('bitrate') || '320kbps',
             // UI
             callEnded: false,
             disconnecting: false,
@@ -254,7 +257,10 @@ export default {
             this.voiceDCHandler()
             this.audioComponents.forEach(audio => audio.pause())
             leaveAudio.play()
-            if (this.hostConn) this.hostConn.send(JSON.stringify({ type: 'disconnect' }))
+            if (this.hostConn) {
+                this.hostConn.send(JSON.stringify({ type: 'disconnect' }))
+                this.hostConn.close()
+            }
             if (!this.hostConn) this.broadcastToPeers(JSON.stringify({ type: 'disconnect' }))
                 // We're giving some time here for users to disconnect, if they take longer than 1000ms
                 // to leave, they are currently a lost cause...
@@ -265,5 +271,9 @@ export default {
             this.latency.start = Date.now()
             this.hostConn.send(JSON.stringify({ type: 'ping' }))
         },
+        qualityChanged(quality) {
+            this.bitrate = quality
+            localStorage.bitrate = quality
+        }
     }
 }

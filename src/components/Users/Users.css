@@ -26,7 +26,7 @@ li {
 
 .users {
     position: absolute;
-    top: 2rem;
+    top: 3.5rem;
     right: 1.5rem;
     color: #fff;
 }
@@ -43,7 +43,6 @@ li {
     background: transparent;
     border: none;
     font-size: 15px;
-    cursor: pointer;
 }
 
 .card {

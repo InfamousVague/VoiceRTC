@@ -6,7 +6,7 @@ process.env['APP_PATH'] = app.getAppPath()
 
 let url
 if (process.env.NODE_ENV === 'DEV') {
-    url = 'http://localhost:8081/'
+    url = 'http://localhost:8083/'
 } else {
     url = `file://${process.env['APP_PATH']}/dist/index.html`
 }
@@ -19,6 +19,7 @@ app.on('ready', () => {
         webPreferences: {
             enableRemoteModule: true,
             nodeIntegration: true,
+            worldSafeExecuteJavaScript: true
         }
     })
     window.setResizable(false)

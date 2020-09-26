@@ -1,0 +1,20 @@
+#qualitySelector {
+    position: absolute;
+    right: 1.6rem;
+    top: 2rem;
+    z-index: 10;
+}
+
+#qualitySelector .form-label {
+    line-height: 1;
+    font-size: bold;
+}
+
+#qualitySelector select {
+    font-size: 12px;
+    width: 65px;
+    height: 25px;
+    padding-top: 0rem;
+    float: right;
+    background: rgba(0, 0, 0, 0.2);
+}
